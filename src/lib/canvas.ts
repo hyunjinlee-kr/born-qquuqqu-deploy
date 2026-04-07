@@ -115,9 +115,9 @@ export async function buildStripCanvas(
     } else if (bg.type === 'solid') {
       ctx.fillStyle = bg.bg
       ctx.fillRect(0, 0, cw, ch)
-    } else if (bg.type === 'upload') {
-      ctx.fillStyle = bg.bg ?? '#f4faf6'
-      ctx.fillRect(0, 0, cw, ch)
+    } else if (bg.type === 'upload' && bg.bg) {
+      const bgImg = await loadImage(bg.bg)
+      drawImageCover(ctx, bgImg, 0, 0, cw, ch)
     }
   } else {
     ctx.fillStyle = frame.bg

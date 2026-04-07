@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Step, Layout, FrameOption, BgOption, CameraMode } from './types'
 import { FRAMES } from './lib/frames'
 import { useConfig } from './hooks/useConfig'
@@ -70,7 +70,14 @@ function PhotoboothApp() {
 }
 
 export default function App() {
-  const isAdmin = window.location.hash === '#admin'
-  if (isAdmin) return <AdminPage />
+  const [hash, setHash] = useState(window.location.hash)
+
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  if (hash === '#admin') return <AdminPage />
   return <PhotoboothApp />
 }
