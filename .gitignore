@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+.vite/
+tsconfig.tsbuildinfo
 
 # macOS
 .DS_Store
