@@ -1,15 +1,35 @@
 import type { FrameOption } from '../types'
 
+/**
+ * === FRAMES (템플릿) 목록 ===
+ *
+ * 새 프레임 추가 방법:
+ * 1. solid/pattern → 아래 배열에 객체 추가
+ * 2. png 프레임   → public./frames/ 에 {name}-1x4.png, {name}-2x2.png 넣고
+ *                    아래 배열에 pngUrl1x4, pngUrl2x2 경로 추가
+ */
 export const FRAMES: FrameOption[] = [
-  { id: 'black',  name: '블랙',  bg: '#1a1a1a', textColor: '#f0f0f0', type: 'solid' },
-  { id: 'white',  name: '화이트', bg: '#ffffff', textColor: '#1a2e24', type: 'solid' },
-  { id: 'mint',   name: '민트',  bg: '#e8f8f0', textColor: '#1a5e3a', type: 'solid' },
-  { id: 'navy',   name: '네이비', bg: '#1a2744', textColor: '#c8d8ff', type: 'solid' },
-  { id: 'cream',  name: '크림',  bg: '#fdf6ec', textColor: '#4a3010', type: 'solid' },
-  { id: 'rose',   name: '로즈',  bg: '#fdeef0', textColor: '#6a1a28', type: 'solid' },
-  { id: 'heart',  name: '하트',  bg: '#fff0f5', textColor: '#c0185a', type: 'pattern', pattern: 'heart' },
-  { id: 'dot',    name: '도트',  bg: '#f0f4ff', textColor: '#2244aa', type: 'pattern', pattern: 'dot' },
-  { id: 'star',   name: '별',    bg: '#fffbe8', textColor: '#7a5a00', type: 'pattern', pattern: 'star' },
+  // ── PNG 프레임 ──
+  { id: 'png-black',   name: '블랙',   bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/black-1x4.png',   pngUrl2x2: './frames/black-2x2.png' },
+  { id: 'png-white',   name: '화이트', bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/white-1x4.png',   pngUrl2x2: './frames/white-2x2.png' },
+  { id: 'png-green',   name: '그린',   bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/green-1x4.png',   pngUrl2x2: './frames/green-2x2.png' },
+  { id: 'png-pink',    name: '핑크',   bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/pink-1x4.png',    pngUrl2x2: './frames/pink-2x2.png' },
+  { id: 'png-yellow',  name: '옐로우', bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/yellow-1x4.png',  pngUrl2x2: './frames/yellow-2x2.png' },
+  { id: 'png-blue',    name: '블루',   bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/blue-1x4.png',    pngUrl2x2: './frames/blue-2x2.png' },
+  { id: 'png-chunsam', name: '춘삼이', bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/chunsam-1x4.png', pngUrl2x2: './frames/chunsam-2x2.png' },
+
+  // ── Solid 프레임 ──
+  { id: 'black',  name: '블랙(단색)',  bg: '#1a1a1a', textColor: '#f0f0f0', type: 'solid' },
+  { id: 'white',  name: '화이트(단색)', bg: '#ffffff', textColor: '#1a2e24', type: 'solid' },
+  { id: 'mint',   name: '민트',        bg: '#e8f8f0', textColor: '#1a5e3a', type: 'solid' },
+  { id: 'navy',   name: '네이비',      bg: '#1a2744', textColor: '#c8d8ff', type: 'solid' },
+  { id: 'cream',  name: '크림',        bg: '#fdf6ec', textColor: '#4a3010', type: 'solid' },
+  { id: 'rose',   name: '로즈',        bg: '#fdeef0', textColor: '#6a1a28', type: 'solid' },
+
+  // ── Pattern 프레임 ──
+  { id: 'heart', name: '하트', bg: '#fff0f5', textColor: '#c0185a', type: 'pattern', pattern: 'heart' },
+  { id: 'dot',   name: '도트', bg: '#f0f4ff', textColor: '#2244aa', type: 'pattern', pattern: 'dot' },
+  { id: 'star',  name: '별',   bg: '#fffbe8', textColor: '#7a5a00', type: 'pattern', pattern: 'star' },
 ]
 
 export const DEFAULT_FRAME = FRAMES[0]

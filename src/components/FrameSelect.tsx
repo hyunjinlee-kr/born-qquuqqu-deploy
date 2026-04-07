@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { FrameOption, Layout } from '../types'
 import { drawFramePreview } from '../lib/canvas'
-import { fetchActiveFrames } from '../lib/api'
+import { FRAMES } from '../lib/frames'
 
 interface Props {
   layout: Layout
@@ -59,14 +59,8 @@ function FrameThumb({ frame, layout, selected, onClick }: {
 }
 
 export default function FrameSelect({ layout, frame, onSelect, onNext, onBack }: Props) {
-  const [allFrames, setAllFrames] = useState<FrameOption[]>([])
-  const [loading, setLoading] = useState(true)
-
   useEffect(() => {
-    fetchActiveFrames().then(frames => {
-      setAllFrames(frames)
-      if (frames.length > 0 && !frame.id) onSelect(frames[0])
-    }).catch(() => {}).finally(() => setLoading(false))
+    if (!frame.id || frame.id === '_default') onSelect(FRAMES[0])
   }, [])
 
   return (
@@ -82,13 +76,8 @@ export default function FrameSelect({ layout, frame, onSelect, onNext, onBack }:
         <p className="text-muted text-[13px] md:text-[14px] mb-6">마음에 드는 프레임을 선택하세요</p>
 
         <div className="flex-1 overflow-y-auto pb-4">
-          {loading ? (
-            <p className="text-muted text-[14px] text-center py-8">불러오는 중...</p>
-          ) : allFrames.length === 0 ? (
-            <p className="text-muted text-[14px] text-center py-8">등록된 프레임이 없습니다</p>
-          ) : (
           <div className="grid grid-cols-3 gap-4 md:gap-5 max-w-[600px] mx-auto">
-            {allFrames.map(f => (
+            {FRAMES.map(f => (
               <FrameThumb
                 key={f.id}
                 frame={f}
@@ -98,7 +87,6 @@ export default function FrameSelect({ layout, frame, onSelect, onNext, onBack }:
               />
             ))}
           </div>
-          )}
         </div>
 
         <div className="mt-auto pt-4 max-w-[360px] md:max-w-[460px] mx-auto w-full">

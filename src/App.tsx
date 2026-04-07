@@ -1,9 +1,6 @@
-import { lazy, Suspense, useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 import type { Step, Layout, FrameOption, BgOption, CameraMode } from './types'
-// Fallback defaults (used before DB loads)
-const FALLBACK_FRAME: FrameOption = { id: '_default', name: '기본', bg: '#ffffff', textColor: '#1a2e24', type: 'solid' }
-const FALLBACK_BG: BgOption = { id: '_none', label: '없음', type: 'none' }
+import { FRAMES } from './lib/frames'
 
 import Landing from './components/Landing'
 import LayoutSelect from './components/LayoutSelect'
@@ -13,9 +10,10 @@ import SourceSelect from './components/SourceSelect'
 import Camera from './components/Camera'
 import Result from './components/Result'
 
-const AdminLayout = lazy(() => import('./admin/AdminLayout'))
+const FALLBACK_FRAME: FrameOption = FRAMES[0]
+const FALLBACK_BG: BgOption = { id: '_none', label: '없음', type: 'none' }
 
-function PhotoboothApp() {
+export default function App() {
   const [step, setStep] = useState<Step>('landing')
   const [layout, setLayout] = useState<Layout>('1x4')
   const [frame, setFrame] = useState<FrameOption>(FALLBACK_FRAME)
@@ -61,18 +59,5 @@ function PhotoboothApp() {
       {step === 'source' && <SourceSelect layout={layout} onCamera={() => setStep('camera')} onAlbum={handleAlbum} onBack={() => setStep('bg')} />}
       {step === 'camera' && <Camera onDone={handleCameraDone} onBack={() => setStep('source')} />}
     </div>
-  )
-}
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/admin/*" element={
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-bg text-txt">로딩 중...</div>}>
-          <AdminLayout />
-        </Suspense>
-      } />
-      <Route path="*" element={<PhotoboothApp />} />
-    </Routes>
   )
 }

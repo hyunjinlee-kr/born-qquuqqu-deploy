@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { BgOption } from '../types'
 import { drawBgThumb } from '../lib/canvas'
-import { fetchActiveBackgrounds } from '../lib/api'
+import { BG_OPTIONS } from '../lib/backgrounds'
 
 interface Props {
   bg: BgOption
@@ -86,14 +86,6 @@ function UploadThumb({ selected, onFile }: {
 }
 
 export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack }: Props) {
-  const [allBgs, setAllBgs] = useState<BgOption[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchActiveBackgrounds().then(bgs => {
-      setAllBgs(bgs)
-    }).catch(() => {}).finally(() => setLoading(false))
-  }, [])
 
   function handleUpload(url: string) {
     onSelect({ id: 'upload', label: '커스텀', type: 'upload', bg: url })
@@ -117,11 +109,8 @@ export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack }: Props
         <h2 className="text-[22px] md:text-[26px] font-bold text-txt mt-4 mb-1">배경 선택</h2>
         <p className="text-muted text-[13px] md:text-[14px] mb-6">프레임 외부 배경을 선택하세요</p>
 
-        {loading ? (
-          <p className="text-muted text-[14px] text-center py-8">불러오는 중...</p>
-        ) : (
         <div className="grid grid-cols-4 gap-4 md:gap-5 max-w-[600px] mx-auto">
-          {allBgs.map(b => (
+          {BG_OPTIONS.map(b => (
             <BgThumb key={b.id} bg={b} selected={bg.id === b.id} onClick={() => onSelect(b)} />
           ))}
           <UploadThumb
@@ -129,7 +118,6 @@ export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack }: Props
             onFile={handleUpload}
           />
         </div>
-        )}
       </div>
 
       <div className="sticky bottom-0 bg-bg border-t border-border px-5 py-4">
