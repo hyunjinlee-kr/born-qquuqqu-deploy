@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { BgOption } from '../types'
 import { drawBgThumb } from '../lib/canvas'
 import { BG_OPTIONS } from '../lib/backgrounds'
@@ -9,6 +9,7 @@ interface Props {
   onNext: () => void
   onSkip: () => void
   onBack: () => void
+  activeIds: string[]
 }
 
 function BgThumb({ bg, selected, onClick }: { bg: BgOption; selected: boolean; onClick: () => void }) {
@@ -85,7 +86,11 @@ function UploadThumb({ selected, onFile }: {
   )
 }
 
-export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack }: Props) {
+export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack, activeIds }: Props) {
+  const visibleBgs = useMemo(
+    () => BG_OPTIONS.filter(b => activeIds.includes(b.id)),
+    [activeIds]
+  )
 
   function handleUpload(url: string) {
     onSelect({ id: 'upload', label: '커스텀', type: 'upload', bg: url })
@@ -110,7 +115,7 @@ export default function BgSelect({ bg, onSelect, onNext, onSkip, onBack }: Props
         <p className="text-muted text-[13px] md:text-[14px] mb-6">프레임 외부 배경을 선택하세요</p>
 
         <div className="grid grid-cols-4 gap-4 md:gap-5 max-w-[600px] mx-auto">
-          {BG_OPTIONS.map(b => (
+          {visibleBgs.map(b => (
             <BgThumb key={b.id} bg={b} selected={bg.id === b.id} onClick={() => onSelect(b)} />
           ))}
           <UploadThumb

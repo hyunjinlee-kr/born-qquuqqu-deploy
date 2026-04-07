@@ -18,13 +18,13 @@ export const FRAMES: FrameOption[] = [
   { id: 'png-blue',    name: '블루',   bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/blue-1x4.png',    pngUrl2x2: './frames/blue-2x2.png' },
   { id: 'png-chunsam', name: '춘삼이', bg: '#ffffff', textColor: '#1a2e24', type: 'png', pngUrl1x4: './frames/chunsam-1x4.png', pngUrl2x2: './frames/chunsam-2x2.png' },
 
-  // ── Solid 프레임 (숨김) ──
-  // { id: 'black',  name: '블랙(단색)',  bg: '#1a1a1a', textColor: '#f0f0f0', type: 'solid' },
-  // { id: 'white',  name: '화이트(단색)', bg: '#ffffff', textColor: '#1a2e24', type: 'solid' },
-  // { id: 'mint',   name: '민트',        bg: '#e8f8f0', textColor: '#1a5e3a', type: 'solid' },
-  // { id: 'navy',   name: '네이비',      bg: '#1a2744', textColor: '#c8d8ff', type: 'solid' },
-  // { id: 'cream',  name: '크림',        bg: '#fdf6ec', textColor: '#4a3010', type: 'solid' },
-  // { id: 'rose',   name: '로즈',        bg: '#fdeef0', textColor: '#6a1a28', type: 'solid' },
+  // ── Solid 프레임 ──
+  { id: 'black',  name: '블랙(단색)',  bg: '#1a1a1a', textColor: '#f0f0f0', type: 'solid' },
+  { id: 'white',  name: '화이트(단색)', bg: '#ffffff', textColor: '#1a2e24', type: 'solid' },
+  { id: 'mint',   name: '민트',        bg: '#e8f8f0', textColor: '#1a5e3a', type: 'solid' },
+  { id: 'navy',   name: '네이비',      bg: '#1a2744', textColor: '#c8d8ff', type: 'solid' },
+  { id: 'cream',  name: '크림',        bg: '#fdf6ec', textColor: '#4a3010', type: 'solid' },
+  { id: 'rose',   name: '로즈',        bg: '#fdeef0', textColor: '#6a1a28', type: 'solid' },
 
   // ── Pattern 프레임 ──
   { id: 'heart', name: '하트', bg: '#fff0f5', textColor: '#c0185a', type: 'pattern', pattern: 'heart' },
