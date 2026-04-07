@@ -57,7 +57,7 @@ export default function Landing({ onEnter }: Props) {
         </div>
 
         <p className="text-muted text-[13px] md:text-[15px] leading-relaxed max-w-[240px] md:max-w-[320px]">
-          Vintage photobooth with<br />custom backgrounds
+          본꾸꾸 셀프 사진관
         </p>
 
         <button
