@@ -177,9 +177,19 @@ export default function AdminPage() {
     setSaving(true)
     setMessage('')
     try {
-      const newSha = await saveConfigToGitHub(token, config, sha)
-      setSha(newSha)
-      setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
+      // SHA 불일치 시 최신 SHA로 재시도
+      let currentSha = sha
+      try {
+        const newSha = await saveConfigToGitHub(token, config, currentSha)
+        setSha(newSha)
+        setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
+      } catch {
+        const latest = await fetchConfigFromGitHub(token)
+        currentSha = latest.sha
+        const newSha = await saveConfigToGitHub(token, config, currentSha)
+        setSha(newSha)
+        setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
+      }
     } catch (e: unknown) {
       setMessage(`저장 실패: ${e instanceof Error ? e.message : '알 수 없는 오류'}`)
     } finally {
