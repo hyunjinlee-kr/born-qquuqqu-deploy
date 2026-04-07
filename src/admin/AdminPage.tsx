@@ -17,8 +17,9 @@ interface Config {
 
 // ── GitHub API로 config.json 읽기/쓰기 ──
 async function fetchConfigFromGitHub(token: string): Promise<{ config: Config; sha: string }> {
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/config.json?ref=gh-pages`, {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/config.json?ref=gh-pages&t=${Date.now()}`, {
     headers: { Authorization: `token ${token}` },
+    cache: 'no-store',
   })
   if (!res.ok) throw new Error('config.json을 찾을 수 없습니다')
   const data = await res.json()
