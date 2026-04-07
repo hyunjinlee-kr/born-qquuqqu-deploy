@@ -112,7 +112,6 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('')
 
   const [config, setConfig] = useState<Config>({ activeFrames: [], activeBackgrounds: [] })
-  const [sha, setSha] = useState('')
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -139,9 +138,8 @@ export default function AdminPage() {
     setLoading(true)
     setMessage('')
     try {
-      const { config: c, sha: sh } = await fetchConfigFromGitHub(token)
+      const { config: c } = await fetchConfigFromGitHub(token)
       setConfig(c)
-      setSha(sh)
     } catch (e: unknown) {
       setMessage(`불러오기 실패: ${e instanceof Error ? e.message : '알 수 없는 오류'}`)
     } finally {
@@ -177,19 +175,10 @@ export default function AdminPage() {
     setSaving(true)
     setMessage('')
     try {
-      // SHA 불일치 시 최신 SHA로 재시도
-      let currentSha = sha
-      try {
-        const newSha = await saveConfigToGitHub(token, config, currentSha)
-        setSha(newSha)
-        setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
-      } catch {
-        const latest = await fetchConfigFromGitHub(token)
-        currentSha = latest.sha
-        const newSha = await saveConfigToGitHub(token, config, currentSha)
-        setSha(newSha)
-        setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
-      }
+      // 저장 직전에 항상 최신 SHA를 가져옴
+      const latest = await fetchConfigFromGitHub(token)
+      await saveConfigToGitHub(token, config, latest.sha)
+      setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
     } catch (e: unknown) {
       setMessage(`저장 실패: ${e instanceof Error ? e.message : '알 수 없는 오류'}`)
     } finally {
