@@ -35,8 +35,8 @@
 ### 1. 설치
 
 ```bash
-git clone https://github.com/yujin-chati/born-test.git
-cd born-test
+git clone https://github.com/hyunjinlee-kr/born-qquuqqu-deploy.git
+cd born-qquuqqu-deploy
 npm install
 ```
 
