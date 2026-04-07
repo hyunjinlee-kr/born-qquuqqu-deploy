@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  body {
+    background-color: #F4FAF6;
+    color: #1A2E24;
+    overscroll-behavior: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes countdown-pop {
+  0% { opacity: 1; transform: scale(1.8); }
+  60% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.6); }
+}
+
+@keyframes flash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes rec-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-twinkle { animation: twinkle var(--duration, 4s) ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 8s linear infinite; }
+.animate-fadeUp { animation: fadeUp 0.35s ease forwards; }
+.animate-countdown { animation: countdown-pop 0.9s ease forwards; }
+.animate-flash { animation: flash 0.45s ease-out forwards; }
+.animate-rec-blink { animation: rec-blink 0.8s ease-in-out infinite; }
+
+.body-edit-lock {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  touch-action: none;
+}
