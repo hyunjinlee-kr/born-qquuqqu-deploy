@@ -10,6 +10,9 @@ import { join } from 'path'
 
 const run = (cmd) => execSync(cmd, { stdio: 'inherit' })
 
+// 현재 브랜치 기억
+const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+
 // dist 파일 목록을 미리 수집
 function getAllFiles(dir, base = '') {
   const results = []
@@ -55,7 +58,7 @@ try {
 }
 run('git push origin gh-pages --force')
 
-// 6. main으로 복귀
-run('git checkout main')
+// 6. 원래 브랜치로 복귀
+run(`git checkout ${currentBranch}`)
 
 console.log('\n✅ Deployed to gh-pages!')
