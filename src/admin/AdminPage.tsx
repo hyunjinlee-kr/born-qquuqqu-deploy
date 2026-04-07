@@ -6,32 +6,19 @@ import type { FrameOption, BgOption } from '../types'
 
 const ADMIN_PASSWORD = 'qquqqu2024'
 
+// ── GitHub 리포 설정 (고정) ──
+const GITHUB_OWNER = 'hyunjinlee-kr'
+const GITHUB_REPO = 'born-qquuqqu-deploy'
+
 interface Config {
   activeFrames: string[]
   activeBackgrounds: string[]
 }
 
-// ── GitHub API 설정 ──
-interface GitHubSettings {
-  owner: string
-  repo: string
-  token: string
-}
-
-function getGitHubSettings(): GitHubSettings | null {
-  const raw = localStorage.getItem('qquqqu_github')
-  if (!raw) return null
-  try { return JSON.parse(raw) } catch { return null }
-}
-
-function saveGitHubSettings(s: GitHubSettings) {
-  localStorage.setItem('qquqqu_github', JSON.stringify(s))
-}
-
 // ── GitHub API로 config.json 읽기/쓰기 ──
-async function fetchConfigFromGitHub(s: GitHubSettings): Promise<{ config: Config; sha: string }> {
-  const res = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/config.json?ref=gh-pages`, {
-    headers: { Authorization: `token ${s.token}` },
+async function fetchConfigFromGitHub(token: string): Promise<{ config: Config; sha: string }> {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/config.json?ref=gh-pages`, {
+    headers: { Authorization: `token ${token}` },
   })
   if (!res.ok) throw new Error('config.json을 찾을 수 없습니다')
   const data = await res.json()
@@ -39,12 +26,12 @@ async function fetchConfigFromGitHub(s: GitHubSettings): Promise<{ config: Confi
   return { config: content, sha: data.sha }
 }
 
-async function saveConfigToGitHub(s: GitHubSettings, config: Config, sha: string) {
+async function saveConfigToGitHub(token: string, config: Config, sha: string) {
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2) + '\n')))
-  const res = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/config.json`, {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/config.json`, {
     method: 'PUT',
     headers: {
-      Authorization: `token ${s.token}`,
+      Authorization: `token ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -120,13 +107,9 @@ function BgThumbSmall({ bg, active, onToggle }: { bg: BgOption; active: boolean;
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
   const [password, setPassword] = useState('')
-  const [pwError, setPwError] = useState(false)
-
-  const [ghSettings, setGhSettings] = useState<GitHubSettings | null>(getGitHubSettings)
-  const [owner, setOwner] = useState(ghSettings?.owner ?? '')
-  const [repo, setRepo] = useState(ghSettings?.repo ?? '')
-  const [token, setToken] = useState(ghSettings?.token ?? '')
-  const [showSettings, setShowSettings] = useState(!ghSettings)
+  const [ghToken, setGhToken] = useState(localStorage.getItem('qquqqu_gh_token') ?? '')
+  const [needToken] = useState(!localStorage.getItem('qquqqu_gh_token'))
+  const [loginError, setLoginError] = useState('')
 
   const [config, setConfig] = useState<Config>({ activeFrames: [], activeBackgrounds: [] })
   const [sha, setSha] = useState('')
@@ -135,28 +118,28 @@ export default function AdminPage() {
   const [message, setMessage] = useState('')
 
   function handleLogin() {
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true)
-      setPwError(false)
-    } else {
-      setPwError(true)
+    if (password !== ADMIN_PASSWORD) {
+      setLoginError('비밀번호가 틀렸습니다')
+      return
     }
+    if (needToken && !ghToken.trim()) {
+      setLoginError('GitHub 토큰을 입력해주세요')
+      return
+    }
+    if (ghToken.trim()) {
+      localStorage.setItem('qquqqu_gh_token', ghToken.trim())
+    }
+    setLoginError('')
+    setAuthed(true)
   }
 
-  function handleSaveSettings() {
-    const s = { owner: owner.trim(), repo: repo.trim(), token: token.trim() }
-    if (!s.owner || !s.repo || !s.token) return
-    saveGitHubSettings(s)
-    setGhSettings(s)
-    setShowSettings(false)
-    loadConfig(s)
-  }
-
-  async function loadConfig(s: GitHubSettings) {
+  async function loadConfig() {
+    const token = localStorage.getItem('qquqqu_gh_token')
+    if (!token) return
     setLoading(true)
     setMessage('')
     try {
-      const { config: c, sha: sh } = await fetchConfigFromGitHub(s)
+      const { config: c, sha: sh } = await fetchConfigFromGitHub(token)
       setConfig(c)
       setSha(sh)
     } catch (e: unknown) {
@@ -167,7 +150,7 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (authed && ghSettings) loadConfig(ghSettings)
+    if (authed) loadConfig()
   }, [authed])
 
   function toggleFrame(id: string) {
@@ -189,11 +172,12 @@ export default function AdminPage() {
   }
 
   async function handleSave() {
-    if (!ghSettings) return
+    const token = localStorage.getItem('qquqqu_gh_token')
+    if (!token) return
     setSaving(true)
     setMessage('')
     try {
-      const newSha = await saveConfigToGitHub(ghSettings, config, sha)
+      const newSha = await saveConfigToGitHub(token, config, sha)
       setSha(newSha)
       setMessage('저장 완료! 노출 PC에서 새로고침하면 반영됩니다.')
     } catch (e: unknown) {
@@ -215,54 +199,25 @@ export default function AdminPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
-            placeholder="비밀번호 입력"
+            placeholder="비밀번호"
             className="w-full border border-border rounded-xl px-4 py-3 text-[14px] mb-3 outline-none focus:border-acc"
           />
-          {pwError && <p className="text-red-500 text-[12px] mb-3">비밀번호가 틀렸습니다</p>}
+          {needToken && (
+            <input
+              type="password"
+              value={ghToken}
+              onChange={e => setGhToken(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              placeholder="GitHub 토큰 (최초 1회)"
+              className="w-full border border-border rounded-xl px-4 py-3 text-[14px] mb-3 outline-none focus:border-acc"
+            />
+          )}
+          {loginError && <p className="text-red-500 text-[12px] mb-3">{loginError}</p>}
           <button
             onClick={handleLogin}
             className="w-full bg-acc text-white font-bold rounded-xl py-3 text-[14px]"
           >
             로그인
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // ── GitHub 설정 화면 ──
-  if (showSettings || !ghSettings) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-[400px]">
-          <h1 className="text-xl font-bold text-txt mb-1">GitHub 연동 설정</h1>
-          <p className="text-muted text-[12px] mb-6">최초 1회만 설정하면 됩니다</p>
-          <div className="space-y-3">
-            <input
-              value={owner}
-              onChange={e => setOwner(e.target.value)}
-              placeholder="GitHub 소유자 (예: hyunjinlee-kr)"
-              className="w-full border border-border rounded-xl px-4 py-3 text-[13px] outline-none focus:border-acc"
-            />
-            <input
-              value={repo}
-              onChange={e => setRepo(e.target.value)}
-              placeholder="리포지토리 이름 (예: born-qquuqqu-deploy)"
-              className="w-full border border-border rounded-xl px-4 py-3 text-[13px] outline-none focus:border-acc"
-            />
-            <input
-              type="password"
-              value={token}
-              onChange={e => setToken(e.target.value)}
-              placeholder="GitHub Token (repo 권한 필요)"
-              className="w-full border border-border rounded-xl px-4 py-3 text-[13px] outline-none focus:border-acc"
-            />
-          </div>
-          <button
-            onClick={handleSaveSettings}
-            className="w-full bg-acc text-white font-bold rounded-xl py-3 text-[14px] mt-4"
-          >
-            저장
           </button>
         </div>
       </div>
@@ -281,10 +236,13 @@ export default function AdminPage() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setShowSettings(true)}
+              onClick={() => {
+                localStorage.removeItem('qquqqu_gh_token')
+                window.location.reload()
+              }}
               className="text-[12px] text-muted border border-border rounded-lg px-3 py-1.5"
             >
-              설정
+              토큰 초기화
             </button>
             <button
               onClick={() => { window.location.hash = ''; window.location.reload() }}
