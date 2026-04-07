@@ -1,0 +1,35 @@
+{
+  "activeFrames": [
+    "png-black",
+    "png-white",
+    "png-green",
+    "png-pink",
+    "png-yellow",
+    "png-blue",
+    "png-chunsam",
+    "heart",
+    "dot",
+    "star"
+  ],
+  "activeBackgrounds": [
+    "star-wg",
+    "star-mg",
+    "star-dk",
+    "star-nv",
+    "star-cr",
+    "star-rz",
+    "heart-wpk",
+    "heart-dk",
+    "heart-pk",
+    "heart-pp",
+    "heart-lp",
+    "heart-nv",
+    "solid-wh",
+    "solid-bk",
+    "solid-mt",
+    "solid-nv",
+    "solid-cr",
+    "solid-rz",
+    "none"
+  ]
+}
