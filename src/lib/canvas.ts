@@ -89,6 +89,7 @@ export function drawStripPattern(
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
+    img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
     img.onerror = reject
     img.src = src
@@ -192,6 +193,7 @@ export function drawFramePreview(
     const pngUrl = layout === '1x4' ? frame.pngUrl1x4 : frame.pngUrl2x2
     if (pngUrl) {
       const img = new Image()
+      img.crossOrigin = 'anonymous'
       img.onload = () => {
         ctx.fillStyle = '#f0f0f0'
         ctx.fillRect(0, 0, w, h)

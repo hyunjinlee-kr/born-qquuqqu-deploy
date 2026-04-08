@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import type { Step, Layout, FrameOption, BgOption, CameraMode } from './types'
 import { useConfig } from './hooks/useConfig'
 
@@ -22,6 +22,15 @@ function PhotoboothApp() {
   const [videoClips, setVideoClips] = useState<Blob[]>([])
   const [mode, setMode] = useState<CameraMode>('photo')
   const { activeFrames, activeBackgrounds, loading } = useConfig()
+
+  // 선택된 레이아웃에 맞는 프레임만 필터 (PNG 프레임은 해당 레이아웃 PNG가 있어야 표시)
+  const filteredFrames = useMemo(() =>
+    activeFrames.filter(f => {
+      if (f.type !== 'png') return true // solid/pattern은 모든 레이아웃 지원
+      return layout === '1x4' ? !!f.pngUrl1x4 : !!f.pngUrl2x2
+    }),
+    [activeFrames, layout]
+  )
 
   function reset() {
     setStep('landing')
@@ -59,7 +68,7 @@ function PhotoboothApp() {
     <div className="max-w-[430px] md:max-w-[640px] lg:max-w-[800px] mx-auto min-h-screen relative">
       {step === 'landing' && <Landing onEnter={() => setStep('layout')} />}
       {step === 'layout' && <LayoutSelect layout={layout} onSelect={setLayout} onNext={() => setStep('frame')} onBack={() => setStep('landing')} />}
-      {step === 'frame' && <FrameSelect layout={layout} frame={frame} onSelect={setFrame} onNext={() => setStep('bg')} onBack={() => setStep('layout')} frames={activeFrames} />}
+      {step === 'frame' && <FrameSelect layout={layout} frame={frame} onSelect={setFrame} onNext={() => setStep('bg')} onBack={() => setStep('layout')} frames={filteredFrames} />}
       {step === 'bg' && <BgSelect bg={bg} onSelect={setBg} onNext={() => setStep('source')} onSkip={() => { setBg(FALLBACK_BG); setStep('source') }} onBack={() => setStep('frame')} backgrounds={activeBackgrounds} />}
       {step === 'source' && <SourceSelect layout={layout} onCamera={() => setStep('camera')} onAlbum={handleAlbum} onBack={() => setStep('bg')} />}
       {step === 'camera' && <Camera onDone={handleCameraDone} onBack={() => setStep('source')} />}
