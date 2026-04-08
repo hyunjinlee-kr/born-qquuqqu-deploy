@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import type { FrameOption, Layout } from '../types'
 import { drawFramePreview } from '../lib/canvas'
-import { FRAMES } from '../lib/frames'
 
 interface Props {
   layout: Layout
-  frame: FrameOption
+  frame: FrameOption | null
   onSelect: (f: FrameOption) => void
   onNext: () => void
   onBack: () => void
-  activeIds: string[]
+  frames: FrameOption[]
 }
 
 function FrameThumb({ frame, layout, selected, onClick }: {
@@ -58,17 +57,12 @@ function FrameThumb({ frame, layout, selected, onClick }: {
   )
 }
 
-export default function FrameSelect({ layout, frame, onSelect, onNext, onBack, activeIds }: Props) {
-  const visibleFrames = useMemo(
-    () => FRAMES.filter(f => activeIds.includes(f.id)),
-    [activeIds]
-  )
-
+export default function FrameSelect({ layout, frame, onSelect, onNext, onBack, frames }: Props) {
   useEffect(() => {
-    if (visibleFrames.length > 0 && (!frame.id || frame.id === '_default' || !activeIds.includes(frame.id))) {
-      onSelect(visibleFrames[0])
+    if (frames.length > 0 && !frame) {
+      onSelect(frames[0])
     }
-  }, [visibleFrames])
+  }, [frames])
 
   return (
     <div className="flex flex-col min-h-screen bg-bg animate-fadeUp">
@@ -84,12 +78,12 @@ export default function FrameSelect({ layout, frame, onSelect, onNext, onBack, a
 
         <div className="flex-1 overflow-y-auto pb-4">
           <div className="grid grid-cols-3 gap-4 md:gap-5 max-w-[600px] mx-auto">
-            {visibleFrames.map(f => (
+            {frames.map(f => (
               <FrameThumb
                 key={f.id}
                 frame={f}
                 layout={layout}
-                selected={frame.id === f.id}
+                selected={frame?.id === f.id}
                 onClick={() => onSelect(f)}
               />
             ))}
